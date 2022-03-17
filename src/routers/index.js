@@ -28,6 +28,16 @@ const route = [
                     },
                 },
             },
+            {
+                path: "/login-admin",
+                name: "login-admin",
+                components: {
+                    default: () => import("../views/Admin.vue"),
+                    dialog: () => {
+                        return import("../components/Login.vue");
+                    },
+                },
+            },
         ],
     },
 ];

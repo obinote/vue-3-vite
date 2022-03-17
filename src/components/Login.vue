@@ -1,10 +1,17 @@
 <template>
-    <el-dialog v-model="dialogVisible" title="Tips" width="30%" :before-close="handleClose">
-        <span>This is a message</span>
+    <el-dialog v-model="dialogVisible" title="Login" width="80%" :before-close="handleClose">
+        <el-form label-width="120px">
+            <el-form-item label="Email">
+                <el-input v-model="email" />
+            </el-form-item>
+            <el-form-item label="Password">
+                <el-input v-model="password" type="password" placeholder="Please input password" show-password />
+            </el-form-item>
+        </el-form>
         <template #footer>
             <span class="dialog-footer">
                 <el-button @click="handleClose">Cancel</el-button>
-                <el-button type="primary" @click="login()">Confirm</el-button>
+                <el-button type="primary" @click="doLogin">Login</el-button>
             </span>
         </template>
     </el-dialog>
@@ -18,7 +25,14 @@ export default {
     data() {
         return {
             dialogVisible: false,
+            email: "",
+            password: "8",
         };
+    },
+    beforeRouteEnter(to, from, next) {
+        next((vm) => {
+            vm.checkLogin();
+        });
     },
     mounted() {
         this.init();
@@ -26,21 +40,41 @@ export default {
     computed: {},
     methods: {
         ...mapActions({
-            // getPosts: "getPosts",
+            getUsers: "getUsers",
         }),
         async init() {
             this.toggleDialog(true);
         },
         handleClose() {
             this.dialogVisible = false;
-            this.$router.go(-1);
+            this.$router.push({ name: "home" });
         },
         toggleDialog(val) {
             this.dialogVisible = val;
         },
-        login() {
-
-        }
+        checkLogin() {
+            let email = localStorage.getItem("email");
+            let password = localStorage.getItem("password");
+            if (email && password) {
+                this.$router.push({ name: "admin" });
+            }
+        },
+        doLogin() {
+            this.getUsers({ userId: this.password })
+                .then((res) => {
+                    let { data, status } = res;
+                    if (status === status) {
+                        if (data.length > 0) {
+                            localStorage.setItem("email", data[0].email);
+                            localStorage.setItem("password", data[0].id);
+                            this.$router.push({ name: "admin" });
+                        }
+                    }
+                })
+                .catch((e) => {
+                    console.log(e);
+                });
+        },
     },
 };
 </script>
